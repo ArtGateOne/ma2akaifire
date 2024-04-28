@@ -1,4 +1,4 @@
-//ma2 Akai Fire control code v 0.5 beta by ArtGateOne
+//ma2 Akai Fire control code v 0.6 beta by ArtGateOne
 
 var easymidi = require('easymidi');
 var W3CWebSocket = require('websocket')
@@ -12,6 +12,7 @@ midi_out = 'FL STUDIO FIRE';    //set correct midi out device name
 colors = 1; //auto color 0 = off, 1 = on
 blink = 1;  //blink run executor 0 = off, 1 = on (blink work only when colors mode is on)
 page_flash = 0; // 0=off (normal switch pages), 1=on (klick and hold page button to select page, when release button - back to page 1);
+onpc_switch_page = 1;   //switch page on pc from akai 0 = off, 1 = on
 
 //-----------------------------------------------------------------------------------
 
@@ -268,21 +269,33 @@ input.on('noteon', function (msg) {
     else if (msg.note == 36) {//Page 1
         pageIndex = 0;
         buttons_brightness();
+        if (onpc_switch_page == 1){
+            client.send('{"command":"Page 1","session":' + session + ',"requestType":"command","maxRequests":0}');
+        }
     }
 
     else if (msg.note == 37) {//Page 2
         pageIndex = 1;
         buttons_brightness();
+        if (onpc_switch_page == 1){
+            client.send('{"command":"Page 2","session":' + session + ',"requestType":"command","maxRequests":0}');
+        }
     }
 
     else if (msg.note == 38) {//Page 3
         pageIndex = 2;
         buttons_brightness();
+        if (onpc_switch_page == 1){
+            client.send('{"command":"Page 3","session":' + session + ',"requestType":"command","maxRequests":0}');
+        }
     }
 
     else if (msg.note == 39) {//Page 4
         pageIndex = 3;
         buttons_brightness();
+        if (onpc_switch_page == 1){
+            client.send('{"command":"Page 4","session":' + session + ',"requestType":"command","maxRequests":0}');
+        }
     }
 
     else if (msg.note == 44 && shift == 1) {//Shift
