@@ -1,4 +1,4 @@
-//ma2 Akai Fire control code v 0.7 beta by ArtGateOne
+//ma2 Akai Fire control code v 0.8 beta by ArtGateOne
 
 var easymidi = require('easymidi');
 var W3CWebSocket = require('websocket')
@@ -9,8 +9,8 @@ var client = new W3CWebSocket('ws://localhost:80/'); //U can change localhost(12
 //CONFIG
 midi_in = 'FL STUDIO FIRE';     //set correct midi in device name
 midi_out = 'FL STUDIO FIRE';    //set correct midi out device name
-colors = 1; //auto color 0 = off, 1 = on
-blink = 1;  //blink run executor 0 = off, 1 = on (blink work only when colors mode is on)
+colors = 0; //auto color executo 0 = off, 1 = on
+blink = 0;  //blink run executor 0 = off, 1 = on (blink work only when colors mode is on)
 page_flash = 0; // 0=off (normal switch pages), 1=on (klick and hold page button to select page, when release button - back to page 1);
 onpc_switch_page = 1;   //switch page on pc from akai 0 = off, 1 = on
 
@@ -269,7 +269,7 @@ input.on('noteon', function (msg) {
     else if (msg.note == 36) {//Page 1
         pageIndex = 0;
         buttons_brightness();
-        if (onpc_switch_page == 1){
+        if (onpc_switch_page == 1) {
             client.send('{"command":"ButtonPage 1","session":' + session + ',"requestType":"command","maxRequests":0}');
         }
     }
@@ -277,7 +277,7 @@ input.on('noteon', function (msg) {
     else if (msg.note == 37) {//Page 2
         pageIndex = 1;
         buttons_brightness();
-        if (onpc_switch_page == 1){
+        if (onpc_switch_page == 1) {
             client.send('{"command":"ButtonPage 2","session":' + session + ',"requestType":"command","maxRequests":0}');
         }
     }
@@ -285,7 +285,7 @@ input.on('noteon', function (msg) {
     else if (msg.note == 38) {//Page 3
         pageIndex = 2;
         buttons_brightness();
-        if (onpc_switch_page == 1){
+        if (onpc_switch_page == 1) {
             client.send('{"command":"ButtonPage 3","session":' + session + ',"requestType":"command","maxRequests":0}');
         }
     }
@@ -293,7 +293,7 @@ input.on('noteon', function (msg) {
     else if (msg.note == 39) {//Page 4
         pageIndex = 3;
         buttons_brightness();
-        if (onpc_switch_page == 1){
+        if (onpc_switch_page == 1) {
             client.send('{"command":"Page 4","session":' + session + ',"requestType":"command","maxRequests":0}');
         }
     }
@@ -403,7 +403,7 @@ input.on('noteon', function (msg) {
         }
     }
 
-    else if (msg.note == 69 ||msg.note == 85|| msg.note == 101 || msg.note == 117){// not used
+    else if (msg.note == 69 || msg.note == 85 || msg.note == 101 || msg.note == 117) {// not used
 
     }
 
@@ -496,7 +496,7 @@ input.on('noteoff', function (msg) {
         }
     }
 
-    else if (msg.note == 69 ||msg.note == 85|| msg.note == 101 || msg.note == 117){// not used
+    else if (msg.note == 69 || msg.note == 85 || msg.note == 101 || msg.note == 117) {// not used
 
     }
 
@@ -687,7 +687,7 @@ input.on('cc', function (msg) {
     }
 });
 
-console.log("Connecting to dot2 ...");
+console.log("Connecting to ma2 ...");
 
 //WEBSOCKET-------------------
 client.onerror = function () {
@@ -751,7 +751,7 @@ client.onmessage = function (e) {
 
         if (obj.session) {
             if (obj.session == -1) {
-                console.log("Please turn on Web Remote, and set Web Remote password to \"remote\"");
+                console.log("Please turn on Login Enabled, and add user \"akaifire\" and set password \"remote\"");
                 output.send('cc', { controller: 127, value: 0, channel: 0 });//off all
                 input.close();
                 output.close();
@@ -795,14 +795,63 @@ client.onmessage = function (e) {
 
             console.log("...LOGGED");
             console.log("SESSION " + session);
-            if (onpc_switch_page == 1){
+            if (onpc_switch_page == 1) {
                 client.send('{"command":"ButtonPage 1","session":' + session + ',"requestType":"command","maxRequests":0}');
             }
         }
         else if (obj.responseType == "playbacks") {
             request++;
             if (obj.responseSubType == 3) {
-                //console.log(obj.itemGroups);
+
+                var k = 0;
+                var l = 0;
+                var key = 0;
+                var index = 7;
+
+                for (var k = 0; k < 4; k++) {
+
+                    for (var j = 0; j < 3; j++) {
+
+                        for (i = 0; i < 5; i++) {
+
+                            array[index] = key;
+                            if (obj.itemGroups[0].items[l][i].isRun == 1) {
+                                array[index + 1] = 0;
+                                array[index + 2] = C2;
+                                array[index + 3] = 0;
+                                if (colors == 1) {
+                                    multicolor(index, (obj.itemGroups[0].items[l][i].tt.t), 1);
+                                }
+                            } else if ((obj.itemGroups[0].items[l][i].i.c) == "#000000") {
+                                array[index + 1] = 0;
+                                array[index + 2] = 0;
+                                array[index + 3] = 0;
+                            } else {
+                                array[index + 1] = C2;
+                                array[index + 2] = C1;
+                                array[index + 3] = 0;
+                                if (colors == 1) {
+                                    multicolor(index, (obj.itemGroups[0].items[l][i].tt.t), 0);
+                                }
+                            }
+
+                            index = index + 4;
+                            key++;
+
+                        }
+                        l++;
+                    }
+                    array[index] = key;
+                    array[index + 1] = 0;
+                    array[index + 2] = 0;
+                    array[index + 3] = 0;
+                    index = index + 4;
+                    key++;
+                }
+
+                output.send('sysex', array);    //send led data to midi
+
+
 
                 //Speed Master led control
                 if (obj.itemGroups[0].items[12][0].tt.t == "Spd 1") {//led interval BPM
@@ -932,185 +981,6 @@ client.onmessage = function (e) {
                         }
                     }
                 }
-            }
-        }
-
-        else if (obj.responseType == "playbacksx") {//Decode data & control led
-
-            request++;
-
-            if (obj.responseSubType == 3) {
-
-                var k = 0;
-                var key = 0;
-                var index = 7;
-
-                for (k = 0; k < 4; k++) {
-                    var l = 15;
-                    for (i = 0; i < 16; i++) {
-
-                        array[index] = key;
-                        if (obj.itemGroups[k].items[l][0].isRun == 1) {
-                            array[index + 1] = 0;
-                            array[index + 2] = C2;
-                            array[index + 3] = 0;
-                            if (colors == 1) {
-                                multicolor(index, (obj.itemGroups[k].items[l][0].tt.t), 1);
-                            }
-                        } else if ((obj.itemGroups[k].items[l][0].i.c) == "#000000") {
-                            array[index + 1] = 0;
-                            array[index + 2] = 0;
-                            array[index + 3] = 0;
-                        } else {
-                            array[index + 1] = C2;
-                            array[index + 2] = C1;
-                            array[index + 3] = 0;
-                            if (colors == 1) {
-                                multicolor(index, (obj.itemGroups[k].items[l][0].tt.t), 0);
-                            }
-                        }
-
-                        index = index + 4;
-                        key++;
-                        l--;
-                    }
-                }
-                index = index + 4;
-
-                output.send('sysex', array);    //send led data to midi
-
-                //Speed Master led control
-                if (obj.itemGroups[4].items[15][0].tt.t == "Master Speed 1") {//led interval BPM
-                    if (led_speedmaster1 == 3) {//if correct Speed Master is stored -> led yellow
-                        led_speedmaster1 = 0;
-                        output.send('cc', { controller: 45, value: 2, channel: 0 });// led yellow
-                    }
-
-                    if (speedmaster1 != parseFloat(obj.itemGroups[4].items[15][0].cues.items[0].t)) {   //check change speed
-                        if ((obj.itemGroups[4].items[15][0].cues.items[0].t) == "Stop") {   //set speed master at 0 - oFF
-                            speedmaster1 = 0;
-                        } else {
-                            speedmaster1 = parseFloat(obj.itemGroups[4].items[15][0].cues.items[0].t); //read speed from dot2 and set to val
-                        }
-
-                        clearInterval(interval1);   //stop interval
-                        output.send('cc', { controller: 45, value: 2, channel: 0 });// led yellow
-
-                        if (speedmaster1 != 60 && speedmaster1 != 0) {//if speed != 0 and 60 -> turn on interval and blink led
-                            interval1 = setInterval(() => {
-                                if (led_speedmaster1 == 0) {
-                                    led_speedmaster1 = 1;
-                                    output.send('cc', { controller: 45, value: 2, channel: 0 });// led yellow
-                                } else {
-                                    led_speedmaster1 = 0;
-                                    output.send('cc', { controller: 45, value: 0, channel: 0 });// led off
-                                }
-                            }, (30000 / speedmaster1));
-                        } else if (speedmaster1 == 0) { //if speed = 0 (Stop) - set led to red
-                            output.send('cc', { controller: 45, value: 1, channel: 0 });// led red
-                        }
-                    }
-                }
-
-                if (obj.itemGroups[0].items[12][1].tt.t == "Master Speed 2") {//led interval BPM
-                    if (led_speedmaster2 == 3) {//if correct Speed Master is stored -> led yellow
-                        led_speedmaster2 = 0;
-                        output.send('cc', { controller: 46, value: 2, channel: 0 });// led yellow
-                    }
-
-                    if (speedmaster2 != parseFloat(obj.itemGroups[0].items[12][1].cues.items[0].t)) {   //check change speed
-                        if ((obj.itemGroups[0].items[12][1].cues.items[0].t) == "Stop") {   //set speed master at 0 - oFF
-                            speedmaster2 = 0;
-                        } else {
-                            speedmaster2 = parseFloat(obj.itemGroups[0].items[12][1].cues.items[0].t); //read speed from dot2 and set to val
-                        }
-
-                        clearInterval(interval2);   //stop interval
-                        output.send('cc', { controller: 46, value: 2, channel: 0 });// led yellow
-
-                        if (speedmaster2 != 60 && speedmaster2 != 0) {//if speed != 0 and 60 -> turn on interval and blink led
-                            interval2 = setInterval(() => {
-                                if (led_speedmaster2 == 0) {
-                                    led_speedmaster2 = 1;
-                                    output.send('cc', { controller: 46, value: 2, channel: 0 });// led yellow
-                                } else {
-                                    led_speedmaster2 = 0;
-                                    output.send('cc', { controller: 46, value: 0, channel: 0 });// led off
-                                }
-                            }, (30000 / speedmaster2));
-                        } else if (speedmaster2 == 0) { //if speed = 0 (Stop) - set led to red
-                            output.send('cc', { controller: 46, value: 1, channel: 0 });// led red
-                        }
-                    }
-                }
-
-                if (obj.itemGroups[0].items[12][2].tt.t == "Master Speed 3") {//led interval BPM
-                    if (led_speedmaster3 == 3) {//if correct Speed Master is stored -> led yellow
-                        led_speedmaster3 = 0;
-                        output.send('cc', { controller: 47, value: 2, channel: 0 });// led yellow
-                    }
-
-                    if (speedmaster3 != parseFloat(obj.itemGroups[0].items[12][2].cues.items[0].t)) {   //check change speed
-                        if ((obj.itemGroups[0].items[12][2].cues.items[0].t) == "Stop") {   //set speed master at 0 - oFF
-                            speedmaster3 = 0;
-                        } else {
-                            speedmaster3 = parseFloat(obj.itemGroups[0].items[12][2].cues.items[0].t); //read speed from dot2 and set to val
-                        }
-
-                        clearInterval(interval3);   //stop interval
-                        output.send('cc', { controller: 47, value: 2, channel: 0 });// led yellow
-
-                        if (speedmaster3 != 60 && speedmaster3 != 0) {//if speed != 0 and 60 -> turn on interval and blink led
-                            interval3 = setInterval(() => {
-                                if (led_speedmaster3 == 0) {
-                                    led_speedmaster3 = 1;
-                                    output.send('cc', { controller: 47, value: 2, channel: 0 });// led yellow
-                                } else {
-                                    led_speedmaster3 = 0;
-                                    output.send('cc', { controller: 47, value: 0, channel: 0 });// led off
-                                }
-                            }, (30000 / speedmaster3));
-                        } else if (speedmaster3 == 0) { //if speed = 0 (Stop) - set led to red
-                            output.send('cc', { controller: 47, value: 1, channel: 0 });// led red
-                        }
-                    }
-                }
-
-                if (obj.itemGroups[0].items[12][2].tt.t == "Master Speed 4") {//led interval BPM
-                    if (led_speedmaster4 == 3) {//if correct Speed Master is stored -> led yellow
-                        led_speedmaster4 = 0;
-                        output.send('cc', { controller: 48, value: 2, channel: 0 });// led yellow
-                    }
-
-                    if (speedmaster4 != parseFloat(obj.itemGroups[0].items[12][2].cues.items[0].t)) {   //check change speed
-                        if ((obj.itemGroups[0].items[12][2].cues.items[0].t) == "Stop") {   //set speed master at 0 - oFF
-                            speedmaster4 = 0;
-                        } else {
-                            speedmaster4 = parseFloat(obj.itemGroups[0].items[12][2].cues.items[0].t); //read speed from dot2 and set to val
-                        }
-
-                        clearInterval(interval4);   //stop interval
-                        output.send('cc', { controller: 48, value: 2, channel: 0 });// led yellow
-
-                        if (speedmaster4 != 60 && speedmaster4 != 0) {//if speed != 0 and 60 -> turn on interval and blink led
-                            interval4 = setInterval(() => {
-                                if (led_speedmaster4 == 0) {
-                                    led_speedmaster4 = 1;
-                                    output.send('cc', { controller: 48, value: 2, channel: 0 });// led yellow
-                                } else {
-                                    led_speedmaster4 = 0;
-                                    output.send('cc', { controller: 48, value: 0, channel: 0 });// led off
-                                }
-                            }, (30000 / speedmaster4));
-                        } else if (speedmaster4 == 0) { //if speed = 0 (Stop) - set led to red
-                            output.send('cc', { controller: 48, value: 1, channel: 0 });// led red
-                        }
-                    }
-                }
-            }
-
-            if (obj.responseSubType == 2) {
-                //do nothing
             }
         }
     }
