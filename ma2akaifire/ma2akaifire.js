@@ -1,4 +1,4 @@
-//ma2 Akai Fire control code v 0.8 beta by ArtGateOne
+//ma2 Akai Fire control code v 0.9 beta by ArtGateOne
 
 var easymidi = require('easymidi');
 var W3CWebSocket = require('websocket')
@@ -9,8 +9,8 @@ var client = new W3CWebSocket('ws://localhost:80/'); //U can change localhost(12
 //CONFIG
 midi_in = 'FL STUDIO FIRE';     //set correct midi in device name
 midi_out = 'FL STUDIO FIRE';    //set correct midi out device name
-colors = 0; //auto color executo 0 = off, 1 = on
-blink = 0;  //blink run executor 0 = off, 1 = on (blink work only when colors mode is on)
+colors = 1; //auto color executor 0 = off, 1 = on (color from executor Name), 2 = on (color from apperance - brightnes)
+blink = 1;  //blink run executor 0 = off, 1 = on (blink work only when colors mode is on)
 page_flash = 0; // 0=off (normal switch pages), 1=on (klick and hold page button to select page, when release button - back to page 1);
 onpc_switch_page = 1;   //switch page on pc from akai 0 = off, 1 = on
 
@@ -820,7 +820,9 @@ client.onmessage = function (e) {
                                 array[index + 2] = C2;
                                 array[index + 3] = 0;
                                 if (colors == 1) {
-                                    multicolor(index, (obj.itemGroups[0].items[l][i].tt.t), 1);
+                                    exec_name_color(index, (obj.itemGroups[0].items[l][i].tt.t), 1);
+                                } else if (colors == 2){
+                                    apperance_color(index, (obj.itemGroups[0].items[l][i].bdC), 1);
                                 }
                             } else if ((obj.itemGroups[0].items[l][i].i.c) == "#000000") {
                                 array[index + 1] = 0;
@@ -831,7 +833,9 @@ client.onmessage = function (e) {
                                 array[index + 2] = C1;
                                 array[index + 3] = 0;
                                 if (colors == 1) {
-                                    multicolor(index, (obj.itemGroups[0].items[l][i].tt.t), 0);
+                                    exec_name_color(index, (obj.itemGroups[0].items[l][i].tt.t), 0);
+                                } else if (colors == 2){
+                                    apperance_color(index, (obj.itemGroups[0].items[l][i].bdC), 0);
                                 }
                             }
 
@@ -993,7 +997,7 @@ function interval() {
     }
 }
 
-function multicolor(index, execname, isRun) {//colors
+function exec_name_color(index, execname, isRun) {//colors
 
     if (execname == "White") {
         array[index + 1] = C2;
@@ -1068,6 +1072,35 @@ function multicolor(index, execname, isRun) {//colors
         array[index + 2] = 0;
         array[index + 3] = 0;
     }
+
+    if (isRun == 1 && blink == 1 && request < 6) {//Blink
+
+        array[index + 1] = 0;
+        array[index + 2] = 0;
+        array[index + 3] = 0;
+
+    }
+
+    return;
+}
+
+function apperance_color(index, bdC, isRun) {//colors
+
+
+    // Conversion of color to RGB components
+    var red = parseInt(bdC.slice(1, 3), 16)/2; // Extracting the red component
+    var green = parseInt(bdC.slice(3, 5), 16)/2; // Extracting the green component
+    var blue = parseInt(bdC.slice(5, 7), 16)/2; // Extracting the blue component
+
+    //console.log(C1);
+    
+    // Writing RGB components to the array
+    array[index + 1] = red; // Red component
+    array[index + 2] = green; // Green component
+    array[index + 3] = blue; // Blue component
+    
+
+
 
     if (isRun == 1 && blink == 1 && request < 6) {//Blink
 
