@@ -1,4 +1,4 @@
-//ma2 Akai Fire control code v 0.9 beta by ArtGateOne
+//ma2 Akai Fire control code v 1.0 by ArtGateOne
 
 var easymidi = require('easymidi');
 var W3CWebSocket = require('websocket')
@@ -10,9 +10,10 @@ var client = new W3CWebSocket('ws://localhost:80/'); //U can change localhost(12
 midi_in = 'FL STUDIO FIRE';     //set correct midi in device name
 midi_out = 'FL STUDIO FIRE';    //set correct midi out device name
 colors = 1; //auto color executor 0 = off, 1 = on (color from executor Name), 2 = on (color from apperance - brightnes)
-blink = 1;  //blink run executor 0 = off, 1 = on (blink work only when colors mode is on)
+blink = 0;  //blink run executor 0 = off, 1 = on (blink work only when colors mode is on)
 page_flash = 0; // 0=off (normal switch pages), 1=on (klick and hold page button to select page, when release button - back to page 1);
 onpc_switch_page = 1;   //switch page on pc from akai 0 = off, 1 = on
+grandmaster_level = 1;    //display grandmaster level 0 = off, 1 = white, 2 = hue
 
 //-----------------------------------------------------------------------------------
 
@@ -66,10 +67,15 @@ console.log("Midi OUT");
 console.log(easymidi.getOutputs());
 
 //Global var
+var B1 = 0;
+var B2 = 0;
+var B3 = 0;
 var C1 = 8;
 var C2 = 16;
 var C3 = 0;
 var C4 = 1;
+
+grandmaster_level_indicator();
 
 var interval1 = setInterval(() => {//Speed Master 1 BPM
     if (led_speedmaster1 == 0) {
@@ -446,6 +452,9 @@ input.on('noteoff', function (msg) {
         if (page_flash == 1) {
             pageIndex = 0;
             buttons_brightness();
+            if (onpc_switch_page == 1) {
+                client.send('{"command":"ButtonPage 1","session":' + session + ',"requestType":"command","maxRequests":0}');
+            }
         }
     }
 
@@ -684,6 +693,7 @@ input.on('cc', function (msg) {
         } else if (blackout == 1) {
             //do nothing
         }
+        grandmaster_level_indicator();
     }
 });
 
@@ -800,7 +810,11 @@ client.onmessage = function (e) {
             }
         }
         else if (obj.responseType == "playbacks") {
+
             request++;
+
+            BO_led_indicator();
+
             if (obj.responseSubType == 3) {
 
                 var k = 0;
@@ -821,7 +835,7 @@ client.onmessage = function (e) {
                                 array[index + 3] = 0;
                                 if (colors == 1) {
                                     exec_name_color(index, (obj.itemGroups[0].items[l][i].tt.t), 1);
-                                } else if (colors == 2){
+                                } else if (colors == 2) {
                                     apperance_color(index, (obj.itemGroups[0].items[l][i].bdC), 1);
                                 }
                             } else if ((obj.itemGroups[0].items[l][i].i.c) == "#000000") {
@@ -834,7 +848,7 @@ client.onmessage = function (e) {
                                 array[index + 3] = 0;
                                 if (colors == 1) {
                                     exec_name_color(index, (obj.itemGroups[0].items[l][i].tt.t), 0);
-                                } else if (colors == 2){
+                                } else if (colors == 2) {
                                     apperance_color(index, (obj.itemGroups[0].items[l][i].bdC), 0);
                                 }
                             }
@@ -846,9 +860,9 @@ client.onmessage = function (e) {
                         l++;
                     }
                     array[index] = key;
-                    array[index + 1] = 0;
-                    array[index + 2] = 0;
-                    array[index + 3] = 0;
+                    array[index + 1] = B1;
+                    array[index + 2] = B2;
+                    array[index + 3] = B3;
                     index = index + 4;
                     key++;
                 }
@@ -1088,17 +1102,17 @@ function apperance_color(index, bdC, isRun) {//colors
 
 
     // Conversion of color to RGB components
-    var red = parseInt(bdC.slice(1, 3), 16)/2; // Extracting the red component
-    var green = parseInt(bdC.slice(3, 5), 16)/2; // Extracting the green component
-    var blue = parseInt(bdC.slice(5, 7), 16)/2; // Extracting the blue component
+    var red = parseInt(bdC.slice(1, 3), 16) / 2; // Extracting the red component
+    var green = parseInt(bdC.slice(3, 5), 16) / 2; // Extracting the green component
+    var blue = parseInt(bdC.slice(5, 7), 16) / 2; // Extracting the blue component
 
     //console.log(C1);
-    
+
     // Writing RGB components to the array
     array[index + 1] = red; // Red component
     array[index + 2] = green; // Green component
     array[index + 3] = blue; // Blue component
-    
+
 
 
 
@@ -1209,3 +1223,69 @@ function BPM_Led_speedmaster1() {
         output.send('cc', { controller: 45, value: 0, channel: 0 });
     }
 }
+
+function BO_led_indicator() {
+
+    if (blackout == 1 && request < 6 || grandmaster < 100 && request < 6) {//Blink
+
+        output.send('cc', { controller: 33, value: 0, channel: 0 });   //B.O.
+
+    }
+
+    else {
+        output.send('cc', { controller: 33, value: C4, channel: 0 });   //B.O.}
+    }
+
+    return;
+}
+
+function grandmaster_level_indicator() {
+
+    if (grandmaster_level == 1){
+        B1 = grandmaster;
+        B2 = grandmaster;
+        B3 = grandmaster;
+    } else if (grandmaster_level == 2){
+
+        [B1, B2, B3] = grandmaster_color_indicator(grandmaster);
+        //console.log(`grandmaster = ${grandmaster}, B1 = ${B1}, B2 = ${B2}, B3 = ${B3}`);
+    }
+
+    return;
+}
+
+function grandmaster_color_indicator(grandmaster) {
+    if (grandmaster === 0) {
+        return [0, 0, 0];
+    }
+
+    const hue = (1 - grandmaster / 100) * 240;
+    const rgb = hsvToRgb(hue / 360, 1, 1);
+    const B1 = Math.round(rgb[0] * 127);
+    const B2 = Math.round(rgb[1] * 127);
+    const B3 = Math.round(rgb[2] * 127);
+
+    return [B1, B2, B3];
+}
+
+// Funkcja konwertująca HSV na RGB
+function hsvToRgb(h, s, v) {
+    let r, g, b, i, f, p, q, t;
+    i = Math.floor(h * 6);
+    f = h * 6 - i;
+    p = v * (1 - s);
+    q = v * (1 - f * s);
+    t = v * (1 - (1 - f) * s);
+    switch (i % 6) {
+        case 0: r = v, g = t, b = p; break;
+        case 1: r = q, g = v, b = p; break;
+        case 2: r = p, g = v, b = t; break;
+        case 3: r = p, g = q, b = v; break;
+        case 4: r = t, g = p, b = v; break;
+        case 5: r = v, g = p, b = q; break;
+    }
+    return [r, g, b];
+}
+
+
+
