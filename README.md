@@ -57,3 +57,12 @@ There is an option to save STORE LOOK - Press and hold ACCNET - press and hold R
 There is an option to delete executors - Hold ACCENT and ALT - and select the Executor. (if it's running - you may get a prompt to confirm the operation - controls on the bottom right will appear)
 
 And that's it! The code is free! Enjoy testing!
+
+
+If the save and delete function doesn't work well for you, simply don't use it and just control your show with Akai Fire - which automatically illuminates active controls! :D
+
+There is an option to save STORE LOOK - Press and hold ACCNET - press and hold REC - click on the executor.
+
+There is an option to delete executors - Hold ACCENT and ALT - and select the Executor. (if it's running - you may get a prompt to confirm the operation - controls on the bottom right will appear)
+
+And that's it! The code is free! Enjoy testing!
