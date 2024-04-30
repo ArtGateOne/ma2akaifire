@@ -99,6 +99,18 @@ page_flash = 0; // 0=off (normal switch pages), 1=on (click and hold page button
 onpc_switch_page = 1; //switch page on PC from Akai 0 = off, 1 = on
 grandmaster_level = 1; //display grandmaster level 0 = off, 1 = white, 2 = hue
 
+var user1_encoder1 = "PAN";
+var user1_encoder2 = "TILT";
+var user1_encoder3 = "FOCUS";
+var user1_encoder4 = "ZOOM";
+
+var user2_encoder1 = "COLORRGB1";   //Red
+var user2_encoder2 = "COLORRGB2";   //Green
+var user2_encoder3 = "COLORRGB3";   //Blue
+var user2_encoder4 = "COLORRGB5";   //White
+
+
+
 I think it's clear - everything is in the descriptions!
 
 If u have problem with rum my code - u can contact with Me wia FB page https://www.facebook.com/ArtGate512/
