@@ -77,6 +77,30 @@ https://www.youtube.com/watch?v=39BKf5KaMmI
 
 ----
 
+Oh, one more important thing - three color display modes for executors.
+
+You can change this by editing the file in Notepad.
+
+colors = 1; //auto color executor 0 = off, 1 = on (color from executor Name), 2 = on (color from appearance - brightness)
+
+colors = 0;
+This mode where executors are clear - not illuminated - saved executor is orange - running executor is green.
+
+colors = 1;
+The program recognizes color names - if you give the executor a name like Red, Green, or Fern Green (colors from the MA2 table) - the executor will automatically change color.
+
+colors = 2;
+Colors are generated automatically based on your Appearance in the executor.
+
+Other settings:
+
+blink = 0; //blink run executor 0 = off, 1 = on (blink works only when colors mode is on)
+page_flash = 0; // 0=off (normal switch pages), 1=on (click and hold page button to select page, when release button - back to page 1);
+onpc_switch_page = 1; //switch page on PC from Akai 0 = off, 1 = on
+grandmaster_level = 1; //display grandmaster level 0 = off, 1 = white, 2 = hue
+
+I think it's clear - everything is in the descriptions!
+
 If u have problem with rum my code - u can contact with Me wia FB page https://www.facebook.com/ArtGate512/
 
 I can help wia AnyDesk
