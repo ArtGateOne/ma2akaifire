@@ -68,3 +68,11 @@ There is an option to delete executors - Hold ACCENT and ALT - and select the Ex
 And that's it! The code is free! Enjoy testing!
 
 https://www.youtube.com/watch?v=39BKf5KaMmI
+
+----
+
+If u have problem with rum my code - u can contact with Me wia FB page https://www.facebook.com/ArtGate512/
+
+I can help wia AnyDesk
+
+ps: code not work with old MA2 software 3.1.2.5 !
