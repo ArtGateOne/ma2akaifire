@@ -67,6 +67,12 @@ There is an option to delete executors - Hold ACCENT and ALT - and select the Ex
 
 And that's it! The code is free! Enjoy testing!
 
+
+-------
+I've recorded a video on how to do it - there was even a problem because I connected the controller to another computer and it wasn't visible in the system :D but you'll see how to check what error occurred from the CMD - it's very simple.
+
+In my repositories, you'll find other versions of this code - for MA2 and dot2 systems - for different controllers (Akai APC Mini - basic and Mk2 versions, BCF2000, Akai APC20, Midicon, etc.)
+
 https://www.youtube.com/watch?v=39BKf5KaMmI
 
 ----
