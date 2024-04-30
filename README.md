@@ -95,19 +95,34 @@ Colors are generated automatically based on your Appearance in the executor.
 Other settings:
 
 blink = 0; //blink run executor 0 = off, 1 = on (blink works only when colors mode is on)
+
 page_flash = 0; // 0=off (normal switch pages), 1=on (click and hold page button to select page, when release button - back to page 1);
+
 onpc_switch_page = 1; //switch page on PC from Akai 0 = off, 1 = on
+
 grandmaster_level = 1; //display grandmaster level 0 = off, 1 = white, 2 = hue
 
+
+
 var user1_encoder1 = "PAN";
+
 var user1_encoder2 = "TILT";
+
 var user1_encoder3 = "FOCUS";
+
 var user1_encoder4 = "ZOOM";
 
+
+
+
 var user2_encoder1 = "COLORRGB1";   //Red
+
 var user2_encoder2 = "COLORRGB2";   //Green
+
 var user2_encoder3 = "COLORRGB3";   //Blue
+
 var user2_encoder4 = "COLORRGB5";   //White
+
 
 
 
