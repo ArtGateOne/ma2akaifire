@@ -1,4 +1,4 @@
-//ma2 Akai Fire control code v 1.0 by ArtGateOne
+//ma2 Akai Fire control code v 1.0.2 by ArtGateOne
 
 var easymidi = require('easymidi');
 var W3CWebSocket = require('websocket')
@@ -29,7 +29,7 @@ var user2_encoder4 = "COLORRGB5";   //White
 
 //-----------------------------------------------------------------------------------
 
-var encoder_y = 418;
+var encoder_y = 418;    //not used XY
 
 var encoder_1_x = 968;
 var encoder_2_x = 1127;
@@ -382,7 +382,7 @@ input.on('noteon', function (msg) {
             client.send('{"requestType":"commandConfirmationResult","result":4,"option":[],"session":' + session + ',"maxRequests":0}'); //Remove
             confirm_off();
         } else {//exec 711
-            client.send('{"requestType":"playbacks_userInput","cmdline":"' + cmd + '","execIndex":710,"pageIndex":0,"buttonId":0,"pressed":true,"released":false,"type":0,"session":' + session + ',"maxRequests":0}');
+            client.send('{"requestType":"playbacks_userInput","cmdline":"' + cmd + '","execIndex":171,"pageIndex":0,"buttonId":0,"pressed":true,"released":false,"type":0,"session":' + session + ',"maxRequests":0}');
         }
     }
 
@@ -391,7 +391,7 @@ input.on('noteon', function (msg) {
             client.send('{"requestType":"commandConfirmationResult","result":1,"option":[],"session":' + session + ',"maxRequests":0}'); //Overwrite
             confirm_off();
         } else {//Exec 710
-            client.send('{"requestType":"playbacks_userInput","cmdline":"' + cmd + '","execIndex":709,"pageIndex":0,"buttonId":0,"pressed":true,"released":false,"type":0,"session":' + session + ',"maxRequests":0}');
+            client.send('{"requestType":"playbacks_userInput","cmdline":"' + cmd + '","execIndex":172,"pageIndex":0,"buttonId":0,"pressed":true,"released":false,"type":0,"session":' + session + ',"maxRequests":0}');
         }
     }
 
@@ -479,14 +479,14 @@ input.on('noteoff', function (msg) {
 
     else if (msg.note == 51) {//Exec 711
         if (confirm != 1) {
-            client.send('{"requestType":"playbacks_userInput","cmdline":"' + cmd + '","execIndex":710,"pageIndex":0,"buttonId":0,"pressed":false,"released":true,"type":0,"session":' + session + ',"maxRequests":0}');
+            client.send('{"requestType":"playbacks_userInput","cmdline":"' + cmd + '","execIndex":171,"pageIndex":0,"buttonId":0,"pressed":false,"released":true,"type":0,"session":' + session + ',"maxRequests":0}');
         }
     }
 
     else if (msg.note == 52) {//Exec 710
         if (confirm != 1) {
             {
-                client.send('{"requestType":"playbacks_userInput","cmdline":"' + cmd + '","execIndex":709,"pageIndex":0,"buttonId":0,"pressed":false,"released":true,"type":0,"session":' + session + ',"maxRequests":0}');
+                client.send('{"requestType":"playbacks_userInput","cmdline":"' + cmd + '","execIndex":172,"pageIndex":0,"buttonId":0,"pressed":false,"released":true,"type":0,"session":' + session + ',"maxRequests":0}');
             }
         }
     }
@@ -859,10 +859,20 @@ client.onmessage = function (e) {
                         }
                         l++;
                     }
-                    array[index] = key;
-                    array[index + 1] = B1;
-                    array[index + 2] = B2;
-                    array[index + 3] = B3;
+
+                    //if (115 - key == grandmaster || 115 - key < grandmaster) {    //:P
+                        array[index] = key;
+                        array[index + 1] = B1;
+                        array[index + 2] = B2;
+                        array[index + 3] = B3;
+
+                    //} else {
+                    //    array[index] = key;
+                    //    array[index + 1] = 0;
+                    //    array[index + 2] = 0;
+                    //    array[index + 3] = 0;
+                    //}
+
                     index = index + 4;
                     key++;
                 }
@@ -1241,11 +1251,11 @@ function BO_led_indicator() {
 
 function grandmaster_level_indicator() {
 
-    if (grandmaster_level == 1){
+    if (grandmaster_level == 1) {
         B1 = grandmaster;
         B2 = grandmaster;
         B3 = grandmaster;
-    } else if (grandmaster_level == 2){
+    } else if (grandmaster_level == 2) {
 
         [B1, B2, B3] = grandmaster_color_indicator(grandmaster);
         //console.log(`grandmaster = ${grandmaster}, B1 = ${B1}, B2 = ${B2}, B3 = ${B3}`);
